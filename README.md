@@ -1,5 +1,3 @@
----
-
 ````markdown
 # Mind Music AR 🎵🖐️
 
@@ -18,8 +16,6 @@ Simply grant webcam access, raise your hands, and start making music with natura
 - 🎚️ **Advanced Music Controls:** Volume, play/pause, shuffle, repeat, and progress seek.
 - 🎛️ **Customizable Settings:** Adjust arpeggiator speed and drum volume.
 - ⚡ **No Installation Required:** Runs directly in your browser.
-
----
 
 ## 🖥️ Live Demo
 
@@ -133,3 +129,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 
 Would you like to include detailed **gesture control instructions** to help users interact with the AR music environment more effectively? Adding this section can make the README even more user-friendly.
 ```
+````
