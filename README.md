@@ -1,7 +1,5 @@
 # Mind Music AR 🎵🖐️
 
-**Live Demo:** [https://syogesh999.github.io/Mind-Music/](https://syogesh999.github.io/Mind-Music/)
-
 ## 📖 Project Overview
 
 **Mind Music AR** is an interactive, browser-based music creation platform that leverages **hand tracking** and **augmented reality (AR) visuals**. Control an arpeggiator, drum machine, and real-time waveform visualizer — all through intuitive hand gestures.  
