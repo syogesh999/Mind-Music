@@ -12,6 +12,18 @@ Simply grant webcam access, raise your hands, and start making music with natura
 - 🎨 **3D Real-Time Waveform Visualizer:** Powered by Three.js for immersive visuals.
 - ⚡ **No Installation Required:** Runs directly in your browser.
 
+## 🖐️ Gesture Controls
+
+- **Raise left hand:** Plays and changes arpeggiator notes
+- **Close left fist:** Switches to the next synth preset
+- **Raise right hand fingers:**
+  - Index finger → Kick
+  - Middle finger → Snare
+  - Ring finger → Clap
+  - Pinky → Hi-hat
+- **Move hand vertically:** Changes pitch
+- **Pinch fingers:** Adjusts note velocity (volume)
+
 ## 🖥️ Live Demo
 
 [**Try Mind Music AR Now**](https://syogesh999.github.io/Mind-Music/)  
