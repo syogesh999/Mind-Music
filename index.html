@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mind Music AR</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <script type="module" src="music-controls.js"></script>
+    <script type="module" src="main.js"></script>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Mind Music AR" />
+    <meta
+      name="description"
+      content="Hand-controlled arp, drum machine, real-time visualizer"
+    />
+
+    <!-- Analytics -->
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="eb59c81c-27cb-4e1d-9e8c-bfbe70c48cd9"
+    ></script>
+
+    <!-- Import Maps for Three.js -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://esm.sh/three@0.161.0?dev",
+          "three/": "https://esm.sh/three@0.161.0&dev/"
+        }
+      }
+    </script>
+  </head>
+  <body style="width: 100vw; height: 100vh; overflow: hidden; margin: 0">
+    <div
+      id="renderDiv"
+      style="width: 100vw; height: 100vh; margin: 0; position: relative"
+    >
+      <span
+        id="info-text"
+        style="
+          position: absolute;
+          top: 2%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0, 0, 0, 0.5);
+          color: #fff;
+          padding: 0.5em 1em;
+          border-radius: 8px;
+          z-index: 2;
+        "
+      >
+        Raise your hands to raise the roof 🎶
+      </span>
+      <div id="canvas-container" style="width: 100%; height: 100%">
+        <canvas
+          id="canvas"
+          style="display: block; width: 100%; height: 100%"
+        ></canvas>
+        <!-- Advanced Controls -->
+        <div
+          id="controls-container"
+          style="
+            position: absolute;
+            top: 10%;
+            right: 2%;
+            background: rgba(30, 30, 30, 0.85);
+            color: #fff;
+            padding: 1em 1.5em;
+            border-radius: 10px;
+            z-index: 3;
+            min-width: 220px;
+          "
+        >
+          <h3 style="margin-top: 0">Music Controls</h3>
+          <label>
+            <span>Arp Speed</span>
+            <input type="range" id="arp-speed" min="60" max="240" value="120" />
+          </label>
+          <br /><br />
+          <label>
+            <span>Drum Volume</span>
+            <input type="range" id="drum-volume" min="0" max="100" value="70" />
+          </label>
+          <br /><br />
+          <button id="toggle-visualizer" style="width: 100%">
+            Toggle Visualizer
+          </button>
+        </div>
+        <!-- Logo only, no code/tutorial link -->
+        <div
+          id="logo-container"
+          class="text-box"
+          style="
+            position: absolute;
+            bottom: 4%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1em 2em;
+            border-radius: 12px;
+            text-align: center;
+            z-index: 15;
+          "
+        >
+          <span id="logo" style="font-size: 2rem">🪬</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modules -->
+    <script type="module" src="music-controls.js"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
