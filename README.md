@@ -76,15 +76,27 @@ Allow your browser to access your webcam when prompted.
 ## 📂 Project Structure
 
 ```
-index.html              # Main HTML page
-styles.css              # Styling (if any)
-main.js                 # Entry point, initializes the game
-game.js                 # Main AR + gesture handling logic
-MusicManager.js         # Handles music synthesis & arpeggios
-music-controls.js       # Enhanced UI music controls
-DrumManager.js          # Drum pattern and triggering logic
-WaveformVisualizer.js   # Real-time waveform rendering
-assets/                 # Any static assets
+MIND-MUSIC/
+├── .vscode/
+│   └── settings.json
+├── assets/
+│   ├── clap.wav
+│   ├── demo.png
+│   ├── hihat.wav
+│   ├── kick.wav
+│   ├── siteOGImage.webp
+│   └── snare.wav
+├── DrumManager.js
+├── game.js
+├── index.html
+├── LICENSE
+├── main.js
+├── music-controls.js
+├── MusicManager.js
+├── README.md
+├── styles.css
+└── WaveformVisualizer.js
+                # Any static assets
 ```
 
 ---
