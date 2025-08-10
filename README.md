@@ -1,4 +1,3 @@
-````markdown
 # Mind Music AR 🎵🖐️
 
 **Live Demo:** [https://syogesh999.github.io/Mind-Music/](https://syogesh999.github.io/Mind-Music/)
@@ -8,7 +7,7 @@
 **Mind Music AR** is an interactive, browser-based music creation platform that leverages **hand tracking** and **augmented reality (AR) visuals**. Control an arpeggiator, drum machine, and real-time waveform visualizer — all through intuitive hand gestures.  
 Simply grant webcam access, raise your hands, and start making music with natural movements.
 
-### Key Features
+### ✨ Key Features
 
 - 🎹 **Hand-Controlled Arpeggiator:** Change notes and instruments using gestures.
 - 🥁 **Gesture-Based Drum Machine:** Trigger drum sounds with specific finger movements.
@@ -45,7 +44,7 @@ python -m http.server 8000
 npx live-server
 ```
 
-Open [http://localhost:8000](http://localhost:8000) in your browser.
+Then open [http://localhost:8000](http://localhost:8000) in your browser.
 
 ### 3️⃣ Enable Webcam Access
 
@@ -74,7 +73,7 @@ Allow your browser to access your webcam when prompted.
 
 ## 📂 Project Structure
 
-```
+```bash
 MIND-MUSIC/
 ├── .vscode/
 │   └── settings.json
@@ -95,7 +94,6 @@ MIND-MUSIC/
 ├── README.md
 ├── styles.css
 └── WaveformVisualizer.js
-                # Static assets and source files
 ```
 
 ---
@@ -122,11 +120,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy
 - **Tone.js** for the flexible audio synthesis engine.
 - **MediaPipe** for real-time hand tracking technology.
 - All open-source contributors who made this project possible.
-
-```
-
----
-
-Would you like to include detailed **gesture control instructions** to help users interact with the AR music environment more effectively? Adding this section can make the README even more user-friendly.
-```
-````
