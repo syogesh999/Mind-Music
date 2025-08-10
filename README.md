@@ -10,8 +10,6 @@ Simply grant webcam access, raise your hands, and start making music with natura
 - 🎹 **Hand-Controlled Arpeggiator:** Change notes and instruments using gestures.
 - 🥁 **Gesture-Based Drum Machine:** Trigger drum sounds with specific finger movements.
 - 🎨 **3D Real-Time Waveform Visualizer:** Powered by Three.js for immersive visuals.
-- 🎚️ **Advanced Music Controls:** Volume, play/pause, shuffle, repeat, and progress seek.
-- 🎛️ **Customizable Settings:** Adjust arpeggiator speed and drum volume.
 - ⚡ **No Installation Required:** Runs directly in your browser.
 
 ## 🖥️ Live Demo
