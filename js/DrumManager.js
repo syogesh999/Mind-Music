@@ -148,10 +148,10 @@ var fingerToDrumMap = {
         }
         players = new Tone.Players({
             urls: {
-                kick: 'assets/kick.wav',
-                snare: 'assets/snare.wav',
-                hihat: 'assets/hihat.wav',
-                clap: 'assets/clap.wav'
+                kick: 'assets/audio/kick.wav',
+                snare: 'assets/audio/snare.wav',
+                hihat: 'assets/audio/hihat.wav',
+                clap: 'assets/audio/clap.wav'
             },
             onload: function() {
                 isLoaded = true;
