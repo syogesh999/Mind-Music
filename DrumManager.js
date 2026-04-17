@@ -249,3 +249,29 @@ var fingerToDrumMap = {
  */ export function getDrumPattern() {
     return drumPattern;
 }
+/**
+ * Sets the volume for all drum players uniformly.
+ * @param {number} level - Volume multiplier 0.0–1.0 (maps to dB).
+ */ export function setVolume(level) {
+    if (!isLoaded || !players) return;
+    var clampedLevel = Math.max(0, Math.min(1, level));
+    // Convert linear 0-1 to dB. Volume at 1.0 = 0 dB, at 0.0 = -Infinity.
+    var db = clampedLevel <= 0 ? -Infinity : 20 * Math.log10(clampedLevel);
+    ['kick', 'snare', 'hihat', 'clap'].forEach(function(drum) {
+        try {
+            players.player(drum).volume.value = db;
+        } catch(e) { /* player may not be loaded */ }
+    });
+}
+/**
+ * Stops and disposes the current sequence, allowing startSequence() to be called again.
+ * Fixes the restart bug where the sequence could not be restarted.
+ */ export function resetSequence() {
+    if (sequence) {
+        sequence.stop(0);
+        sequence.dispose();
+        sequence = null;
+    }
+    beatIndex = 0;
+    activeDrums.clear();
+}

@@ -236,8 +236,9 @@ export var Game = /*#__PURE__*/ function() {
         this.lastVideoTime = -1;
         this.hands = []; // Stores data about detected hands (landmarks, anchor position, line group)
         this.handLineMaterial = null; // Material for hand lines
-        this.fingertipMaterialHand1 = null; // Material for first hand's fingertip circles (blue)
-        this.fingertipMaterialHand2 = null; // Material for second hand's fingertip circles (green)
+        this.handLineMaterialHand2 = null; // Different colour for second hand
+        this.fingertipMaterialHand1 = null; // Material for first hand's fingertip circles
+        this.fingertipMaterialHand2 = null; // Material for second hand's fingertip circles
         this.fingertipLandmarkIndices = [
             0,
             4,
@@ -247,19 +248,18 @@ export var Game = /*#__PURE__*/ function() {
             20
         ]; // WRIST + TIP landmarks
         this.handConnections = null; // Landmark connection definitions
-        // this.handCollisionRadius = 30; // Conceptual radius for hand collision, was 25 (sphere radius) - Not needed for template
         this.gameState = 'loading'; // loading, ready, tracking, error
-        this.gameOverText = null; // Will be repurposed or simplified
+        this.gameOverText = null;
         this.clock = new THREE.Clock();
         this.musicManager = new MusicManager(); // Create an instance of MusicManager
         this.waveformVisualizer = null; // To be initialized
-        // this.drumManager = new DrumManager(); // DrumManager is now a static module, no instance needed
+        this.waveformVisible = true; // Track waveform visibility
         this.lastLandmarkPositions = [
             [],
             []
         ]; // Store last known smoothed positions for each hand's landmarks
-        this.smoothingFactor = 0.4; // Alpha for exponential smoothing (0 < alpha <= 1). Smaller = more smoothing.
-        this.loadedModels = {}; // To store loaded models if any (e.g. a generic hand model in future)
+        this.smoothingFactor = 0.4; // Alpha for exponential smoothing (0 < alpha <= 1).
+        this.loadedModels = {};
         this.beatIndicators = []; // Array to hold the 16 beat indicator meshes
         this.beatIndicatorMaterials = []; // Array to hold the base material for each indicator
         this.beatIndicatorColors = {
@@ -267,54 +267,42 @@ export var Game = /*#__PURE__*/ function() {
             snare: new THREE.Color("#F36E2F"),
             clap: new THREE.Color("#7B4394"),
             hihat: new THREE.Color("#84C34E"),
-            off: new THREE.Color("#ffffff") // Off state remains white
+            off: new THREE.Color("#444466")
         };
-        this.beatIndicatorGroup = null; // Group to hold all indicators for easy repositioning
+        this.beatIndicatorGroup = null;
         this.labelColors = {
-            evaPurple: {
-                r: 123,
-                g: 67,
-                b: 148,
-                a: 0.9
-            },
-            evaGreen: {
-                r: 132,
-                g: 195,
-                b: 78,
-                a: 0.9
-            },
-            evaOrange: {
-                r: 243,
-                g: 110,
-                b: 47,
-                a: 0.9
-            },
-            evaRed: {
-                r: 215,
-                g: 40,
-                b: 40,
-                a: 0.9
-            },
-            white: {
-                r: 255,
-                g: 255,
-                b: 255,
-                a: 1.0
-            },
-            black: {
-                r: 0,
-                g: 0,
-                b: 0,
-                a: 1.0
-            }
+            evaPurple: { r: 123, g: 67, b: 148, a: 0.9 },
+            evaGreen:  { r: 132, g: 195, b: 78, a: 0.9 },
+            evaOrange: { r: 243, g: 110, b: 47, a: 0.9 },
+            evaRed:    { r: 215, g: 40, b: 40, a: 0.9 },
+            evaCyan:   { r: 100, g: 220, b: 255, a: 0.9 },
+            white:     { r: 255, g: 255, b: 255, a: 1.0 },
+            black:     { r: 0, g: 0, b: 0, a: 1.0 }
         };
         this.waveformColors = [
             new THREE.Color("#7B4394"),
             new THREE.Color("#84C34E"),
             new THREE.Color("#F36E2F"),
             new THREE.Color("#D72828"),
-            new THREE.Color("#66ffff")
+            new THREE.Color("#64dcff")
         ];
+        // Current musical scale (can be changed by UI)
+        this.currentScale = [
+            'C3','Eb3','F3','G3','Bb3',
+            'C4','Eb4','F4','G4','Bb4',
+            'C5','Eb5'
+        ];
+        // Rotating info messages
+        this._infoMessages = [
+            'Raise your hands to raise the roof \uD83C\uDFB6',
+            'Left hand — open to play synth \uD83C\uDFB9',
+            'Left fist — cycle synth preset \u270A',
+            'Right hand fingers control drums \uD83E\uDD41',
+            'Move left hand up/down to change pitch \uD83C\uDFB5',
+            'Pinch left thumb+index to control volume \u270C\uFE0F',
+        ];
+        this._infoMessageIndex = 0;
+        this._infoMessageTimer = null;
         // Initialize asynchronously
         this._init().catch(function(error) {
             console.error("Initialization failed:", error);
@@ -330,31 +318,49 @@ export var Game = /*#__PURE__*/ function() {
                     return _ts_generator(this, function(_state) {
                         switch(_state.label){
                             case 0:
-                                _this._setupDOM(); // Sets up basic DOM, including speech bubble container
+                                _this._setupDOM();
                                 _this._setupThree();
+                                // Loading screen step 1
+                                if (window._musicControls) {
+                                    window._musicControls.setLoadingStatus('Loading drum samples\u2026', 20);
+                                }
                                 return [
                                     4,
                                     _this._loadAssets()
                                 ];
                             case 1:
-                                _state.sent(); // Add asset loading step
+                                _state.sent();
+                                // Loading screen step 2
+                                if (window._musicControls) {
+                                    window._musicControls.setLoadingStatus('Loading hand tracking model\u2026', 50);
+                                }
                                 return [
                                     4,
                                     _this._setupHandTracking()
                                 ];
                             case 2:
-                                _state.sent(); // This needs to complete before we can proceed
-                                // Ensure webcam is playing before starting game logic dependent on it
+                                _state.sent();
+                                if (window._musicControls) {
+                                    window._musicControls.setLoadingStatus('Starting webcam\u2026', 85);
+                                }
                                 return [
                                     4,
                                     _this.videoElement.play()
                                 ];
                             case 3:
                                 _state.sent();
+                                if (window._musicControls) {
+                                    window._musicControls.setLoadingStatus('Ready! \uD83C\uDFB6', 100);
+                                }
+                                // Hide loading screen after a short delay
+                                setTimeout(function() {
+                                    if (window._musicControls) window._musicControls.hideLoadingScreen();
+                                }, 600);
                                 window.addEventListener('resize', _this._onResize.bind(_this));
-                                _this._startGame(); // Start the game directly
-                                _this._setupEventListeners(); // Set up interaction listeners
-                                _this._animate(); // Start the animation loop (it will check state)
+                                _this._startGame();
+                                _this._setupEventListeners();
+                                _this._startInfoRotation();
+                                _this._animate();
                                 return [
                                     2
                                 ];
@@ -455,18 +461,28 @@ export var Game = /*#__PURE__*/ function() {
                         isFist: false // Track if the hand is currently in a fist
                     });
                 }
+                // Hand 1 (left) — purple/lavender skeleton
                 this.handLineMaterial = new THREE.LineBasicMaterial({
-                    color: 0x00ccff,
-                    linewidth: 8
+                    color: 0xa7a6ff,
+                    linewidth: 4
+                });
+                // Hand 2 (right) — cyan skeleton
+                this.handLineMaterialHand2 = new THREE.LineBasicMaterial({
+                    color: 0x64dcff,
+                    linewidth: 4
                 });
                 this.fingertipMaterialHand1 = new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
+                    color: 0xa7a6ff,
+                    transparent: true,
+                    opacity: 0.9,
                     side: THREE.DoubleSide
-                }); // White
+                });
                 this.fingertipMaterialHand2 = new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
+                    color: 0x64dcff,
+                    transparent: true,
+                    opacity: 0.9,
                     side: THREE.DoubleSide
-                }); // White
+                });
                 // Define connections for MediaPipe hand landmarks
                 // See: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker#hand_landmarks
                 this.handConnections = [
@@ -821,20 +837,8 @@ export var Game = /*#__PURE__*/ function() {
                         var canvasWidth = this.renderDiv.clientWidth;
                         var canvasHeight = this.renderDiv.clientHeight;
                         // C Minor Pentatonic Scale
-                        var scale = [
-                            'C3',
-                            'Eb3',
-                            'F3',
-                            'G3',
-                            'Bb3',
-                            'C4',
-                            'Eb4',
-                            'F4',
-                            'G4',
-                            'Bb4',
-                            'C5',
-                            'Eb5'
-                        ];
+                        // Use current scale (updated by UI events)
+                        var scale = _this.currentScale;
                         for(var i = 0; i < this.hands.length; i++)_this1 = this, _loop(i);
                     } catch (error) {
                         console.error("Error during hand detection:", error);
@@ -922,13 +926,18 @@ export var Game = /*#__PURE__*/ function() {
                 this.gameOverContainer.style.display = 'block';
                 this.gameOverText.innerText = "ERROR: ".concat(message);
                 this.gameOverText.style.color = 'orange';
-                this.restartHintText.style.display = 'true'; // Show restart hint on error
+                this.restartHintText.style.display = 'block'; // BUG FIX: was 'true'
                 this.gameState = 'error';
-                // No spawning to stop
+                // Hide loading screen if error occurs during load
+                if (window._musicControls) {
+                    window._musicControls.setLoadingStatus('Error: ' + message, 0);
+                    setTimeout(function() {
+                        if (window._musicControls) window._musicControls.hideLoadingScreen();
+                    }, 2000);
+                }
                 this.hands.forEach(function(hand) {
                     if (hand.lineGroup) hand.lineGroup.visible = false;
                 });
-            // if (this.startButton) this.startButton.style.display = 'none'; // No longer exists
             }
         },
         {
@@ -962,13 +971,12 @@ export var Game = /*#__PURE__*/ function() {
                         hand.lineGroup.visible = false;
                     }
                 });
-                // Ghost removal removed
-                // Score reset removed
-                // Visibility of game elements removed
-                this.gameState = 'tracking'; // Changed from 'playing'
+                // FIX: Reset and restart drum sequence
+                drumManager.resetSequence();
+                drumManager.startSequence();
+                this.gameState = 'tracking';
                 this.lastVideoTime = -1;
                 this.clock.start();
-            // Removed _startSpawning()
             }
         },
         {
@@ -1198,8 +1206,9 @@ export var Game = /*#__PURE__*/ function() {
                     var y = (1 - normY_visible) * canvasHeight - canvasHeight / 2;
                     return new THREE.Vector3(x, y, 1.1); // Z for fingertip circles
                 });
-                // --- Draw Skeleton Lines ---
+                // --- Draw Skeleton Lines (different colour per hand) ---
                 var lineZ = 1;
+                var activeLineMat = handIndex === 0 ? _this.handLineMaterial : _this.handLineMaterialHand2;
                 this.handConnections.forEach(function(conn) {
                     var p1 = points3D[conn[0]];
                     var p2 = points3D[conn[1]];
@@ -1210,7 +1219,7 @@ export var Game = /*#__PURE__*/ function() {
                             lineP1,
                             lineP2
                         ]);
-                        var line = new THREE.Line(geometry, _this.handLineMaterial);
+                        var line = new THREE.Line(geometry, activeLineMat);
                         lineGroup.add(line);
                     }
                 });
@@ -1297,14 +1306,36 @@ export var Game = /*#__PURE__*/ function() {
             value: function _animate() {
                 requestAnimationFrame(this._animate.bind(this));
                 if (this.gameState === 'tracking') {
-                    var deltaTime = this.clock.getDelta();
+                    this.clock.getDelta(); // consume delta to keep clock ticking
                     this._updateHands();
                     this._updateBeatIndicator();
-                    if (this.waveformVisualizer) {
+                    if (this.waveformVisualizer && this.waveformVisible) {
                         this.waveformVisualizer.update();
                     }
                 }
                 this.renderer.render(this.scene, this.camera);
+            }
+        },
+        {
+            // Rotating info text messages
+            key: "_startInfoRotation",
+            value: function _startInfoRotation() {
+                var _this = this;
+                this._infoMessageTimer = setInterval(function() {
+                    if (_this.gameState !== 'tracking') return;
+                    _this._infoMessageIndex = (_this._infoMessageIndex + 1) % _this._infoMessages.length;
+                    var el = document.getElementById('info-text');
+                    if (el) {
+                        el.style.opacity = '0';
+                        setTimeout(function() {
+                            if (el) {
+                                el.textContent = _this._infoMessages[_this._infoMessageIndex];
+                                el.style.transition = 'opacity 0.5s';
+                                el.style.opacity = '1';
+                            }
+                        }, 300);
+                    }
+                }, 6000);
             }
         },
         {
@@ -1366,13 +1397,65 @@ export var Game = /*#__PURE__*/ function() {
             key: "_setupEventListeners",
             value: function _setupEventListeners() {
                 var _this = this;
-                // Add click listener for resuming audio context and potentially restarting on error
+                // Click on canvas: resume audio context
                 this.renderDiv.addEventListener('click', function() {
-                    _this.musicManager.start(); // Resume audio context on any click
+                    _this.musicManager.start();
                     if (_this.gameState === 'error') {
                         _this._restartGame();
                     }
                 });
+
+                // ── Custom Events from music-controls.js ─────────
+
+                // BPM change
+                window.addEventListener('bpmChange', function(e) {
+                    Tone.Transport.bpm.value = e.detail;
+                    console.log('BPM set to', e.detail);
+                });
+
+                // Reverb wet change
+                window.addEventListener('reverbChange', function(e) {
+                    if (_this.musicManager && _this.musicManager.reverb) {
+                        _this.musicManager.reverb.wet.value = e.detail;
+                    }
+                });
+
+                // Scale change
+                window.addEventListener('scaleChange', function(e) {
+                    _this.currentScale = e.detail.notes;
+                    // Stop active arpeggio so it picks up new scale
+                    _this.musicManager.stopArpeggio(0);
+                });
+
+                // Camera color toggle
+                window.addEventListener('toggleCameraColor', function(e) {
+                    if (_this.videoElement) {
+                        _this.videoElement.style.filter = e.detail.grayscale ? 'grayscale(100%)' : 'none';
+                    }
+                });
+
+                // Waveform toggle
+                window.addEventListener('toggleVisualizer', function() {
+                    _this.waveformVisible = !_this.waveformVisible;
+                    if (_this.waveformVisualizer && _this.waveformVisualizer.mesh) {
+                        _this.waveformVisualizer.mesh.visible = _this.waveformVisible;
+                    }
+                });
+
+                // Restart (keyboard R)
+                window.addEventListener('restartGame', function() {
+                    if (_this.gameState !== 'loading') {
+                        _this._restartGame();
+                    }
+                });
+
+                // Drum volume change
+                window.addEventListener('drumVolumeChange', function(e) {
+                    if (drumManager && drumManager.setVolume) {
+                        drumManager.setVolume(e.detail);
+                    }
+                });
+
                 console.log('Game event listeners set up.');
             }
         }

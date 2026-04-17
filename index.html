@@ -3,15 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mind Music AR</title>
+    <title>Mind Music AR — Hand-Controlled Music Machine</title>
     <link rel="stylesheet" href="styles.css" />
 
     <!-- Primary Meta Tags -->
     <meta name="title" content="Mind Music AR" />
     <meta
       name="description"
-      content="Hand-controlled arp, drum machine, real-time visualizer"
+      content="Control music with your hands — hand-tracked arp, drum machine and real-time waveform visualizer powered by MediaPipe & Tone.js"
     />
+    <meta name="theme-color" content="#0a0b14" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mind Music AR" />
+    <meta
+      property="og:description"
+      content="Control music with your hands in AR"
+    />
+    <meta property="og:image" content="assets/siteOGImage.webp" />
 
     <!-- Analytics -->
     <script
@@ -30,36 +40,51 @@
       }
     </script>
   </head>
-  <body style="width: 100vw; height: 100vh; overflow: hidden; margin: 0">
+  <body>
+    <!-- ── Loading Screen ───────────────────────────────────── -->
+    <div id="loading-screen" role="status" aria-label="Loading Mind Music AR">
+      <div class="loading-logo" aria-hidden="true">🪬</div>
+      <h1 class="loading-title">Mind Music AR</h1>
+      <p class="loading-subtitle">Hand-Controlled Music Machine</p>
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <p class="loading-status" id="loading-status-text">
+        Initialising audio engine…
+      </p>
+      <div class="loading-progress-bar">
+        <div class="loading-progress-fill" id="loading-progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- ── Main App ──────────────────────────────────────────── -->
     <div
       id="renderDiv"
       style="width: 100vw; height: 100vh; margin: 0; position: relative"
     >
-      <span
-        id="info-text"
-        style="
-          position: absolute;
-          top: 2%;
-          left: 50%;
-          transform: translateX(-50%);
-          background: rgba(0, 0, 0, 0.5);
-          color: #fff;
-          padding: 0.5em 1em;
-          border-radius: 8px;
-          z-index: 2;
-        "
-      >
+      <!-- Logo -->
+      <span id="logo" aria-hidden="true">🪬</span>
+
+      <!-- Info Text (top centre) -->
+      <span id="info-text" role="status" aria-live="polite">
         Raise your hands to raise the roof 🎶
       </span>
+
+      <!-- Canvas Container (Three.js + video feed) -->
       <div id="canvas-container" style="width: 100%; height: 100%">
-        <canvas
-          id="canvas"
-          style="display: block; width: 100%; height: 100%"
-        ></canvas>
-          <span id="logo" style="font-size: 2rem">🪬</span>
-        </div>
+        <canvas id="canvas" style="display: block; width: 100%; height: 100%"></canvas>
+      </div>
+
+      <!-- Toast Notifications -->
+      <div id="toast-container" aria-live="assertive"></div>
+
+      <!-- Keyboard Shortcut Hints -->
+      <div id="kbd-hints" aria-hidden="true">
+        <span class="kbd-hint"><span class="kbd">G</span> Gesture Guide</span>
+        <span class="kbd-hint"><span class="kbd">C</span> Camera Color</span>
+        <span class="kbd-hint"><span class="kbd">R</span> Restart</span>
+        <span class="kbd-hint"><span class="kbd">Space</span> Play/Pause</span>
       </div>
     </div>
+
     <!-- Modules -->
     <script type="module" src="music-controls.js"></script>
     <script type="module" src="main.js"></script>
